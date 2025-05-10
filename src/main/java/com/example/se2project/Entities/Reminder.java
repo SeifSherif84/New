@@ -1,24 +1,27 @@
 package com.example.se2project.Entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "reminder")
 public class Reminder {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "reminder_id", nullable = false)
     private Integer id;
 
-    @Column(name = "\"time\"", nullable = false)
-    private Integer time;
+    @Column(name = "date")
+    private LocalDate date;
 
-    @ManyToMany(mappedBy = "reminders")
-    @JsonIgnore
-    private Set<Event> events = new LinkedHashSet<>();
+    @Column(name = "\"time\"")
+    private LocalTime time;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "event_id", nullable = false)
+    private Event event;
 
     public Integer getId() {
         return id;
@@ -28,20 +31,28 @@ public class Reminder {
         this.id = id;
     }
 
-    public Integer getTime() {
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public LocalTime getTime() {
         return time;
     }
 
-    public void setTime(Integer time) {
+    public void setTime(LocalTime time) {
         this.time = time;
     }
 
-    public Set<Event> getEvents() {
-        return events;
+    public Event getEvent() {
+        return event;
     }
 
-    public void setEvents(Set<Event> events) {
-        this.events = events;
+    public void setEvent(Event event) {
+        this.event = event;
     }
 
 }

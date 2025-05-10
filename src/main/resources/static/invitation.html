@@ -39,7 +39,7 @@
     <header class="header">
         <h1>Invitations</h1>
         <div class="user-profile">
-            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User Profile">
+            <img src="Photo/3d-rendering-avatar/9720009.jpg" alt="User Profile">
             <div class="user-info">
                 <h4 id="usernameDisplay"></h4>
             </div>
@@ -189,8 +189,6 @@
 
 
 
-
-
     function getStatusIcon(status) {
         switch(status) {
             case 'pending': return 'fas fa-clock';
@@ -209,9 +207,17 @@
         }
     }
     document.addEventListener('DOMContentLoaded', function() {
+        const username = getCookie('userName');
+        document.getElementById('usernameDisplay').textContent = username;
         loadSendedInvitations();
         loadReceivedInvitations();
     });
+
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
 </script>
 </body>
 </html>

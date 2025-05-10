@@ -1,5 +1,10 @@
 package com.example.se2project.Entities;
 
+import jakarta.persistence.*;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 public class InvitationDTO {
     private Integer invitation_id;
     private String status;

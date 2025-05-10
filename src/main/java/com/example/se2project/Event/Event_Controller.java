@@ -1,33 +1,35 @@
 package com.example.se2project.Event;
-import com.example.se2project.Entities.Event;
-import com.example.se2project.Entities.EventDTO;
-import com.example.se2project.Entities.Eventstatus;
-import com.example.se2project.Entities.User;
+import com.example.se2project.Entities.*;
 import com.example.se2project.EventStatus.EventStatus_Repo;
+import com.example.se2project.Invitation.Invitation_Repo;
+import com.example.se2project.Participation.Paricipation_Repo;
+import com.example.se2project.Reminder.Reminder_Repo;
 import com.example.se2project.User.User_Repo;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+
 
 @RestController
 @RequestMapping("/api")
 public class Event_Controller {
-    final private  Event_Service event_service ;
     final private User_Repo user_repo ;
     final private EventStatus_Repo eventstatus_repo ;
     private final Event_Repo event_Repo;
-    public Object getTitle;
+    private final Reminder_Repo reminder_Repo;
+    private final Invitation_Repo invitation_Repo;
+    private final Paricipation_Repo paricipation_Repo;
 
-    public Event_Controller(Event_Service event_service , User_Repo user_repo , EventStatus_Repo eventstatus_repo, Event_Repo event_Repo) {
-        this.event_service = event_service;
+    public Event_Controller(User_Repo user_repo, EventStatus_Repo eventstatus_repo, Event_Repo event_Repo, Reminder_Repo reminder_Repo, Invitation_Repo invitation_Repo, Paricipation_Repo paricipation_Repo) {
         this.user_repo = user_repo;
         this.eventstatus_repo = eventstatus_repo;
         this.event_Repo = event_Repo;
+        this.reminder_Repo = reminder_Repo;
+        this.invitation_Repo = invitation_Repo;
+        this.paricipation_Repo = paricipation_Repo;
     }
 
     @PostMapping("/Add_Event")
@@ -57,12 +59,49 @@ public class Event_Controller {
         return ResponseEntity.ok("SUCCESS");
     }
 
-
     @GetMapping("/GetAllEvents")
     public ResponseEntity<List<EventDTO>> getAllEvents(@CookieValue(value = "userId", required = false) String userId) {
-        List<EventDTO> eventsDTO = event_Repo.findEventByUserId(Integer.parseInt(userId));
-        return ResponseEntity.ok(eventsDTO);
+        // Events created by the user
+        List<EventDTO> eventsDTO1 = event_Repo.findEventByUserId(Integer.parseInt(userId));
+        for (EventDTO e : eventsDTO1) {
+            e.setEventSource("Created");
+        }
+
+        // Events the user is participating in
+        List<Participation> participations = paricipation_Repo.findParticipationsByUserId(Integer.parseInt(userId));
+        List<EventDTO> eventsDTO2 = new ArrayList<>();
+        for (Participation participation : participations) {
+            Event event = event_Repo.findEventById(participation.getEvent().getId());
+            Eventstatus eventstatus = event.getEventstatus();
+
+            // Avoid duplication if user is already the creator
+            boolean alreadyAdded = eventsDTO1.stream().anyMatch(e -> e.getEvent_id() == event.getId());
+            if (alreadyAdded) continue;
+
+            EventDTO eventDTO = new EventDTO(
+                    event.getId(),
+                    event.getDate(),
+                    event.getDescription(),
+                    eventstatus.getId(),
+                    event.getTime(),
+                    event.getTitle()
+            );
+            eventDTO.setEventSource("Participated");
+
+            eventsDTO2.add(eventDTO);
+        }
+
+        // Combine all events
+        List<EventDTO> allEvents = new ArrayList<>();
+        allEvents.addAll(eventsDTO1);
+        allEvents.addAll(eventsDTO2);
+
+        return ResponseEntity.ok(allEvents);
     }
+
+
+
+
 
 
     @PutMapping("/Edit_Event/{id}")
@@ -82,7 +121,24 @@ public class Event_Controller {
 
     @DeleteMapping("/Delete_Event/{id}")
     public ResponseEntity<String> Delete_Event(@PathVariable Integer id){
+
         Event event = event_Repo.findById(id).get();
+
+        Reminder reminder = reminder_Repo.findByEventId(id);
+        if (reminder != null) {
+            reminder_Repo.delete(reminder);
+        }
+
+        List<Invitation> invitations = invitation_Repo.findInvitationsByEventId(id);
+        if (invitations.size() > 0) {
+            invitation_Repo.deleteAll(invitations);
+        }
+
+        List<Participation> participations = paricipation_Repo.findParticipationsByEventId(id);
+        if (participations.size() > 0) {
+            paricipation_Repo.deleteAll(participations);
+        }
+
         event_Repo.delete(event);
         return ResponseEntity.ok("SUCCESS");
     }

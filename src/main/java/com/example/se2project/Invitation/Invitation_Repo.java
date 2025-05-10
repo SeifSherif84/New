@@ -22,5 +22,8 @@ public interface Invitation_Repo extends JpaRepository<Invitation,Integer> {
 
     Optional<Invitation> findById(Integer id);
 
+    @Query("SELECT e FROM Invitation e WHERE e.event.id = :eventId")
+    List<Invitation> findInvitationsByEventId(@Param("eventId") Integer eventId);
+
 }
 

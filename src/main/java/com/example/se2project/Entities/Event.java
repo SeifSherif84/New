@@ -1,8 +1,5 @@
 package com.example.se2project.Entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -11,7 +8,6 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Entity
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "event")
 public class Event {
     @Id
@@ -33,31 +29,23 @@ public class Event {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonIgnore
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "eventstatus_id", nullable = false)
-    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "eventstatus_id")
     private Eventstatus eventstatus;
 
-    @ManyToMany
-    @JoinTable(name = "event_reminder",
-            joinColumns = @JoinColumn(name = "event_id"),
-            inverseJoinColumns = @JoinColumn(name = "reminder_id"))
-    @JsonIgnore
-    private Set<Reminder> reminders = new LinkedHashSet<>();
-
-    @OneToMany(mappedBy = "event")
-    @JsonIgnore
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Invitation> invitations = new LinkedHashSet<>();
 
-    @ManyToMany
-    @JsonIgnore
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "participation",
             joinColumns = @JoinColumn(name = "event_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> users = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Reminder> reminders = new LinkedHashSet<>();
 
     public Integer getId() {
         return id;
@@ -115,14 +103,6 @@ public class Event {
         this.eventstatus = eventstatus;
     }
 
-    public Set<Reminder> getReminders() {
-        return reminders;
-    }
-
-    public void setReminders(Set<Reminder> reminders) {
-        this.reminders = reminders;
-    }
-
     public Set<Invitation> getInvitations() {
         return invitations;
     }
@@ -137,6 +117,14 @@ public class Event {
 
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+
+    public Set<Reminder> getReminders() {
+        return reminders;
+    }
+
+    public void setReminders(Set<Reminder> reminders) {
+        this.reminders = reminders;
     }
 
 }

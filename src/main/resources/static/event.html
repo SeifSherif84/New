@@ -42,7 +42,7 @@
     <h1>Upcoming Events</h1>
 
     <div class="user-profile">
-      <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User Profile">
+      <img src="Photo/3d-rendering-avatar/9720009.jpg" alt="User Profile">
       <div class="user-info">
         <h4 id="usernameDisplay"></h4>
       </div>
@@ -111,26 +111,31 @@
             <p><i class="fas fa-calendar-day"></i> <strong>Date:</strong> ${event.date}</p>
             <p><i class="fas fa-clock"></i> <strong>Time:</strong> ${event.time}</p>
             <p><i class="fas fa-align-left"></i> <strong>Description:</strong> ${event.description || 'No description'}</p>
-            <div class="event-actions">
-                <button class="edit-btn" data-id="${event.eventId}" data-title="${event.title}" data-date="${event.date}" data-time="${event.time}" data-description="${event.description || ''}">
-                    <i class="fas fa-edit"></i> Edit
-                </button>
-                <button class="delete-btn" data-id="${event.eventId}">
-                    <i class="fas fa-trash-alt"></i> Delete
-                </button>
-                <button class="invite-btn" data-id="${event.eventId}">
-                    <i class="fas fa-user-plus"></i> Invite
-                </button>
-            </div>
+            ${event.eventSource === "Created" ? `
+              <div class="event-actions">
+                  <button class="edit-btn" data-id="${event.event_id}" data-title="${event.title}" data-date="${event.date}" data-time="${event.time}" data-description="${event.description || ''}">
+                      <i class="fas fa-edit"></i> Edit
+                  </button>
+                  <button class="delete-btn" data-id="${event.event_id}">
+                      <i class="fas fa-trash-alt"></i> Delete
+                  </button>
+                  <button class="invite-btn" data-id="${event.event_id}">
+                      <i class="fas fa-user-plus"></i> Invite
+                  </button>
+                  <button class="reminder-btn" data-id="${event.event_id}">
+                      <i class="fas fa-bell"></i> Reminder
+                  </button>
+              </div>
+            ` : ''}
         </div>
     </div>
-`;
+    `;
       eventsList.appendChild(eventElement);
     });
     setupEditForms();
     setupDeleteButton();
     setupInviteButtons();
-
+    setupReminderButtons();
   }
 
 
@@ -324,6 +329,90 @@
       });
     });
   }
+
+
+
+
+  function setupReminderButtons() {
+    document.querySelectorAll('.reminder-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const eventId = e.currentTarget.getAttribute('data-id');
+        const eventCard = e.currentTarget.closest('.event-card');
+
+        const reminderForm = document.createElement('div');
+        reminderForm.classList.add('reminder-form');
+        reminderForm.innerHTML = `
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" class="reminder-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Time</label>
+                        <input type="time" class="reminder-time" required>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="set-reminder-btn">Set Reminder</button>
+                    <button class="cancel-reminder-btn">Cancel</button>
+                </div>
+            `;
+
+        eventCard.querySelector('.event-card-body').style.display = 'none';
+        eventCard.appendChild(reminderForm);
+
+        // Set Reminder button handler
+        reminderForm.querySelector('.set-reminder-btn').addEventListener('click', async () => {
+          const date = reminderForm.querySelector('.reminder-date').value;
+          const time = reminderForm.querySelector('.reminder-time').value;
+
+          if (!date || !time) {
+            alert('Please fill all fields');
+            return;
+          }
+
+          try {
+            const response = await fetch(`http://localhost:8080/api/Add_Reminder/${eventId}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                reminderDate: date,
+                reminderTime: time
+              }),
+              credentials: 'include'
+            });
+
+            if (response.ok) {
+              const resultText = await response.text();
+              if (resultText === "Reminder added") {
+                alert('Reminder set successfully!');
+                eventCard.removeChild(reminderForm);
+                eventCard.querySelector('.event-card-body').style.display = 'block';
+              }
+              else
+                alert(`Failed to set reminder..`);
+            }
+
+          }
+          catch (error) {
+            console.error('Error setting reminder:', error);
+            alert('Error setting reminder. Please try again.');
+          }
+        });
+
+        // Cancel button handler
+        reminderForm.querySelector('.cancel-reminder-btn').addEventListener('click', () => {
+          eventCard.removeChild(reminderForm);
+          eventCard.querySelector('.event-card-body').style.display = 'block';
+        });
+      });
+    });
+  }
+
+
+
 
 
 

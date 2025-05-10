@@ -1,5 +1,6 @@
 package com.example.se2project.Invitation;
 import com.example.se2project.Entities.*;
+import com.example.se2project.Entities.Event.*;
 import com.example.se2project.Event.Event_Repo;
 import com.example.se2project.User.User_Repo;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +14,10 @@ import java.util.Optional;
 public class Invitation_Controller {
 
     private final User_Repo user_repo ;
-    private final Event_Repo event_Repo;
+    private final com.example.se2project.Event.Event_Repo event_Repo;
     private final Invitation_Repo invitation_Repo;
 
-    public Invitation_Controller(User_Repo userRepo, Event_Repo eventRepo, Invitation_Repo invitationRepo) {
+    public Invitation_Controller(User_Repo userRepo, com.example.se2project.Event.Event_Repo eventRepo, Invitation_Repo invitationRepo) {
         user_repo = userRepo;
         event_Repo = eventRepo;
         invitation_Repo = invitationRepo;

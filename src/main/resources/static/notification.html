@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Calendar | Upcoming Events</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="notification.css">
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+<!-- Mobile Menu Button -->
+<button class="mobile-menu-btn" id="menuToggle">
+  <i class="fas fa-bars"></i>
+</button>
+
+<!-- Sidebar Navigation -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <img src="https://cdn-icons-png.flaticon.com/512/3652/3652191.png" alt="Smart Calendar Logo">
+    <h2>Smart Calendar</h2>
+  </div>
+
+  <ul class="nav-menu">
+    <li class="nav-item">
+      <a href="index.html" class="nav-link">
+        <i class="fas fa-calendar-alt"></i>
+        <span>Calendar</span>
+      </a>
+    </li>
+  </ul>
+</aside>
+
+<!-- Main Content -->
+<main class="main-content">
+  <header class="header">
+    <h1>Notification</h1>
+    <div class="user-profile">
+      <img src="Photo/3d-rendering-avatar/9720009.jpg" alt="User Profile">
+      <div class="user-info">
+        <h4 id="usernameDisplay"></h4>
+      </div>
+    </div>
+  </header>
+
+  <div class="notification-container" id="notificationsContainer">
+    <!-- سيتم ملء الإشعارات هنا عبر JavaScript -->
+  </div>
+</main>
+
+<script>
+  // Function to fetch and display notifications
+  async function loadNotifications() {
+    try {
+      const response = await fetch("http://localhost:8080/api/Get_All_Notification", {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch notifications');
+      }
+
+      const notifications = await response.json();
+      const container = document.getElementById('notificationsContainer');
+
+      // if (notifications.length > 0) {
+      //   const audio = new Audio('audio/mixkit-trombone-disappoint-744.wav');
+      //   audio.play();
+      // }
+
+      if (notifications.length === 0) {
+        container.innerHTML = '<p class="empty-message">No Notifications Now</p>';
+        return;
+      }
+
+      let html = '';
+      notifications.forEach(notification => {
+        // تنسيق التاريخ والوقت بشكل أفضل
+        const date = new Date(notification.event_Date);
+        const formattedDate = date.toLocaleDateString();
+        const formattedTime = notification.event_Time || '';
+
+        html += `
+          <div class="notification-card">
+            <h3>${notification.event_title}</h3>
+            <p><i class="fas fa-calendar-day"></i> ${formattedDate}</p>
+            ${formattedTime ? `<p><i class="fas fa-clock"></i> ${formattedTime}</p>` : ''}
+            <p><i class="fas fa-info-circle"></i> ${notification.notification_description}</p>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    } catch (error) {
+      console.error('Error loading notifications:', error);
+      document.getElementById('notificationsContainer').innerHTML =
+              '<p class="error-message">Failed to load notifications. Please try again later.</p>';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const username = getCookie('userName');
+    document.getElementById('usernameDisplay').textContent = username;
+    loadNotifications();
+  });
+
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+
+</script>
+
+
+<!-- قبل </body> مباشرة -->
+<audio id="notificationSound" preload="auto">
+  <source src="audio/mixkit-trombone-disappoint-744.wav" type="audio/mpeg">
+</audio>
+
+</body>
+</html>
