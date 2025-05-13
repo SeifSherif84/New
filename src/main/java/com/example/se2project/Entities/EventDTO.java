@@ -8,16 +8,16 @@ public class EventDTO {
     private Integer event_id;
     private LocalDate date;
     private String description;
-    private Integer eventstatus_id;
+    private String eventstatus;
     private LocalTime time;
     private String title;
-    private String eventSource; // "Created" or "Participated"
+    private String eventSource;
 
-    public EventDTO(Integer event_id, LocalDate date, String description, Integer eventstatus_id, LocalTime time, String title) {
+    public EventDTO(Integer event_id, LocalDate date, String description, String eventstatus, LocalTime time, String title) {
         this.event_id = event_id;
         this.date = date;
         this.description = description;
-        this.eventstatus_id = eventstatus_id;
+        this.eventstatus = eventstatus;
         this.time = time;
         this.title = title;
     }
@@ -46,12 +46,10 @@ public class EventDTO {
         this.description = description;
     }
 
-    public Integer getEventstatus_id() {
-        return eventstatus_id;
-    }
+    public String getEventstatus() { return eventstatus; }
 
-    public void setEventstatus_id(Integer eventstatus_id) {
-        this.eventstatus_id = eventstatus_id;
+    public void setEventstatus(String eventstatus) {
+        this.eventstatus = eventstatus;
     }
 
     public LocalTime getTime() {

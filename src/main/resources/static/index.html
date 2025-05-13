@@ -8,6 +8,91 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Add your existing CSS here */
+    /* New styles for daily view */
+    .daily-view {
+      display: none;
+      width: 100%;
+      border-radius: 8px;
+      background: white;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+
+    .daily-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .daily-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .daily-events {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .time-slot {
+      display: flex;
+      gap: 20px;
+    }
+
+    .time-label {
+      width: 80px;
+      font-weight: 500;
+      color: #555;
+    }
+
+    .daily-event {
+      flex: 1;
+      padding: 12px 15px;
+      background: #f0f7ff;
+      border-radius: 6px;
+      border-left: 4px solid #4a90e2;
+    }
+
+    .daily-event h4 {
+      margin: 0 0 5px 0;
+      font-size: 1rem;
+    }
+
+    .daily-event p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .view-btn.active {
+      background-color: #4a90e2;
+      color: white;
+    }
+
+    .view-btn {
+      padding: 8px 15px;
+      border: 1px solid #ddd;
+      background: white;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .view-btn:first-child {
+      border-radius: 4px 0 0 4px;
+    }
+
+    .view-btn:last-child {
+      border-radius: 0 4px 4px 0;
+    }
+
+    .view-btn:hover {
+      background-color: #f0f0f0;
+    }
+  </style>
   <link rel="stylesheet" href="index.css">
 </head>
 <body>
@@ -80,16 +165,16 @@
 
       <div class="calendar-actions">
         <div class="view-switcher">
-          <button class="view-btn active">Month</button>
-          <button class="view-btn">Day</button>
+          <button class="view-btn active" id="monthViewBtn">Month</button>
+          <button class="view-btn" id="dayViewBtn">Day</button>
         </div>
 
         <div class="month-navigation">
-          <button class="nav-btn">
+          <button class="nav-btn" id="prevBtn">
             <i class="fas fa-chevron-left"></i>
           </button>
           <span class="current-month">October 2023</span>
-          <button class="nav-btn">
+          <button class="nav-btn" id="nextBtn">
             <i class="fas fa-chevron-right"></i>
           </button>
         </div>
@@ -101,7 +186,7 @@
     </div>
 
     <!-- Monthly Calendar Grid -->
-    <div class="month-grid">
+    <div class="month-grid" id="monthView">
       <!-- Day Headers -->
       <div class="day-header">Sun</div>
       <div class="day-header">Mon</div>
@@ -258,6 +343,50 @@
         <div class="day-number">5</div>
       </div>
     </div>
+
+    <!-- Daily Calendar View -->
+    <div class="daily-view" id="dayView">
+      <div class="daily-header">
+        <h3 class="daily-title">Tuesday, October 17, 2023</h3>
+        <button class="action-btn btn-outline" id="addDailyEventBtn">
+          <i class="fas fa-plus"></i> Add Event
+        </button>
+      </div>
+
+      <div class="daily-events">
+        <div class="time-slot">
+          <div class="time-label">08:00 AM</div>
+          <div class="daily-event">
+            <h4>Morning Standup</h4>
+            <p>Daily team sync meeting</p>
+          </div>
+        </div>
+
+        <div class="time-slot">
+          <div class="time-label">12:30 PM</div>
+          <div class="daily-event">
+            <h4>Lunch with Mark</h4>
+            <p>Discuss project collaboration</p>
+          </div>
+        </div>
+
+        <div class="time-slot">
+          <div class="time-label">03:00 PM</div>
+          <div class="daily-event">
+            <h4>Team Building</h4>
+            <p>Department team building activity</p>
+          </div>
+        </div>
+
+        <div class="time-slot">
+          <div class="time-label">07:00 PM</div>
+          <div class="daily-event">
+            <h4>Dinner with Family</h4>
+            <p>Celebrating Mom's birthday</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 </main>
 
@@ -313,13 +442,17 @@
 
   // Event Modal Toggle
   const addEventBtn = document.getElementById('addEventBtn');
+  const addDailyEventBtn = document.getElementById('addDailyEventBtn');
   const eventModal = document.getElementById('eventModal');
   const closeModal = document.getElementById('closeModal');
   const cancelEvent = document.getElementById('cancelEvent');
 
-  addEventBtn.addEventListener('click', () => {
+  const showEventModal = () => {
     eventModal.classList.add('active');
-  });
+  };
+
+  addEventBtn.addEventListener('click', showEventModal);
+  addDailyEventBtn.addEventListener('click', showEventModal);
 
   closeModal.addEventListener('click', () => {
     eventModal.classList.remove('active');
@@ -347,6 +480,10 @@
       description: description
     };
 
+    if (!title || !date || !time) {
+      alert('Please fill in all required fields!');
+    }
+
     try {
       const response = await fetch("http://localhost:8080/api/Add_Event", {
         method: 'POST',
@@ -362,6 +499,12 @@
           alert('Event saved successfully!');
           eventModal.classList.remove('active');
           eventForm.reset();
+          // Refresh the calendar view
+          if (document.getElementById('monthView').style.display !== 'none') {
+            // Refresh month view
+          } else {
+            // Refresh day view
+          }
         }
         else {
           alert('Failed to save event.');
@@ -374,6 +517,62 @@
     }
   });
 
+  // View Switching
+  const monthViewBtn = document.getElementById('monthViewBtn');
+  const dayViewBtn = document.getElementById('dayViewBtn');
+  const monthView = document.getElementById('monthView');
+  const dayView = document.getElementById('dayView');
+
+  monthViewBtn.addEventListener('click', () => {
+    monthViewBtn.classList.add('active');
+    dayViewBtn.classList.remove('active');
+    monthView.style.display = 'grid';
+    dayView.style.display = 'none';
+  });
+
+  dayViewBtn.addEventListener('click', () => {
+    dayViewBtn.classList.add('active');
+    monthViewBtn.classList.remove('active');
+    dayView.style.display = 'block';
+    monthView.style.display = 'none';
+  });
+
+  // Initialize with month view
+  monthViewBtn.classList.add('active');
+  monthView.style.display = 'grid';
+  dayView.style.display = 'none';
+
+  // Month Navigation
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const currentMonthElement = document.querySelector('.current-month');
+
+  let currentDate = new Date(2023, 9, 1); // October 2023 (months are 0-indexed)
+
+  const updateCalendarTitle = () => {
+    const options = { year: 'numeric', month: 'long' };
+    currentMonthElement.textContent = currentDate.toLocaleDateString('en-US', options);
+    document.querySelector('.calendar-title').textContent = currentDate.toLocaleDateString('en-US', options);
+
+    // Update daily view title if it's visible
+    if (dayView.style.display !== 'none') {
+      const dailyTitle = document.querySelector('.daily-title');
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      dailyTitle.textContent = currentDate.toLocaleDateString('en-US', options);
+    }
+  };
+
+  prevBtn.addEventListener('click', () => {
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    updateCalendarTitle();
+    // Here you would typically fetch and update the calendar data
+  });
+
+  nextBtn.addEventListener('click', () => {
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    updateCalendarTitle();
+    // Here you would typically fetch and update the calendar data
+  });
 
   const logoutBtn = document.getElementById('logoutBtn');
   logoutBtn.addEventListener('click', async (e) => {
@@ -397,7 +596,6 @@
       alert('An error occurred during logout.');
     }
   });
-
 
   function getCookie(name) {
     const value = `; ${document.cookie}`;

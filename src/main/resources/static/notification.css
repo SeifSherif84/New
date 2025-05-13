@@ -17,7 +17,7 @@
     border-left: 5px solid;
     transition: all 0.35s cubic-bezier(0.21, 0.61, 0.35, 1);
     margin-bottom: 5px;
-    border-color: #3498db;
+    border-color: #db3434;
     background-image: linear-gradient(to right, #fff, rgba(246, 249, 252, 0.8));
 }
 
@@ -53,7 +53,7 @@
     font-size: 1.5rem;
     opacity: 0.12;
     content: '\f0f3'; /* Bell icon */
-    color: #3498db;
+    color: #db3434;
     transition: all 0.5s ease;
 }
 
@@ -79,7 +79,7 @@
 
 /* Card title */
 .notification-card h3 {
-    color: #2c3e50;
+    color: #502c2c;
     margin: 0 0 15px 0;
     font-size: 1.2rem;
     font-weight: 600;
@@ -96,7 +96,7 @@
     display: block;
     width: 40px;
     height: 3px;
-    background: #3498db;
+    background: #db3434;
     position: absolute;
     bottom: -8px;
     left: 0;
@@ -130,7 +130,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #3498db;
+    color: #db3434;
     transition: transform 0.3s ease;
 }
 
@@ -151,7 +151,7 @@
     right: 5px;
     height: 1px;
     background: linear-gradient(to right,
-    rgba(52, 152, 219, 0.5),
+    rgba(219, 52, 52, 0.5),
     rgba(52, 152, 219, 0.05));
     z-index: 1;
 }
@@ -294,5 +294,149 @@
 
     .error-message {
         background: #482c2a;
+    }
+}
+
+/* Empty Notifications Container */
+.empty-notifications {
+    text-align: center;
+    padding: 40px 20px;
+    background: #f8f9fa;
+    border-radius: 16px;
+    margin: 20px 0;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+    border: 1px dashed rgba(0,0,0,0.08);
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Bell Animation */
+.bell-animation {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bell-animation i {
+    font-size: 2.5rem;
+    color: #bdc3c7;
+    position: relative;
+    z-index: 2;
+    animation: gentleSwing 3s ease-in-out infinite;
+}
+
+/* Sound Wave Animation */
+.sound-waves {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+
+.sound-waves .wave {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 2px solid #e0e0e0;
+    border-radius: 50%;
+    opacity: 0;
+}
+
+.sound-waves .wave:nth-child(1) {
+    width: 60px;
+    height: 60px;
+    animation: soundWave 3s linear infinite;
+}
+
+.sound-waves .wave:nth-child(2) {
+    width: 80px;
+    height: 80px;
+    animation: soundWave 3s linear infinite 0.5s;
+}
+
+.sound-waves .wave:nth-child(3) {
+    width: 100px;
+    height: 100px;
+    animation: soundWave 3s linear infinite 1s;
+}
+
+/* Text Styles */
+.empty-notifications h3 {
+    color: #2c3e50;
+    margin: 0 0 10px;
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+.empty-notifications p {
+    color: #7f8c8d;
+    margin-bottom: 15px;
+    font-size: 1rem;
+}
+
+.sub-message {
+    font-size: 0.85rem;
+    color: #95a5a6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.sub-message i {
+    color: #bdc3c7;
+}
+
+/* Animations */
+@keyframes gentleSwing {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+}
+
+@keyframes soundWave {
+    0% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .empty-notifications {
+        background: #2c3e50;
+        border-color: rgba(255,255,255,0.1);
+    }
+
+    .empty-notifications h3 {
+        color: #ecf0f1;
+    }
+
+    .empty-notifications p, .sub-message {
+        color: #bdc3c7;
+    }
+
+    .bell-animation i {
+        color: #34495e;
+    }
+
+    .sound-waves .wave {
+        border-color: rgba(255,255,255,0.1);
+    }
+
+    .sub-message {
+        border-top: 1px solid rgba(255,255,255,0.1);
     }
 }

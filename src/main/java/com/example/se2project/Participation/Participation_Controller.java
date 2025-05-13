@@ -24,6 +24,7 @@ public class Participation_Controller  {
         Participation ReceiverParticipation = new Participation();
         Invitation invitation = invitation_Repo.findById(invitationId).get();
         invitation.setStatus("accepted");
+        invitation_Repo.save(invitation);
         User Sender = invitation.getSender();
         User Receiver = invitation.getReceiver();
         Event event = invitation.getEvent();
@@ -44,8 +45,15 @@ public class Participation_Controller  {
         paricipationRepo.save(SenderParticipation);
         paricipationRepo.save(ReceiverParticipation);
         return ResponseEntity.ok("Accepted");
+    }
 
 
+    @PostMapping("/Decline_Invitation/{invitationId}")
+    public ResponseEntity<String> Decline_Invitation(@PathVariable Integer invitationId) {
+        Invitation invitation = invitation_Repo.findById(invitationId).get();
+        invitation.setStatus("rejected");
+        invitation_Repo.save(invitation);
+        return ResponseEntity.ok("Rejected");
     }
 
 }

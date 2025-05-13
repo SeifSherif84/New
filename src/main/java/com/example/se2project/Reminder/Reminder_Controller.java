@@ -1,6 +1,5 @@
 package com.example.se2project.Reminder;
 import com.example.se2project.Entities.*;
-import com.example.se2project.Entities.Event;
 import com.example.se2project.Event.Event_Repo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +19,9 @@ public class Reminder_Controller {
 
     @PostMapping("/Add_Reminder/{eventId}")
     public ResponseEntity<String> Add_Reminder(@PathVariable Integer eventId, @RequestBody ReminderRequest reminderRequest) {
+        if(reminderRequest.getReminderDate() == null || reminderRequest.getReminderTime() == null)
+            throw new IllegalArgumentException("Reminder Date And Time Cannot Be Null");
+
         Reminder reminder = new Reminder();
         reminder.setDate(reminderRequest.getReminderDate());
         reminder.setTime(reminderRequest.getReminderTime());

@@ -95,7 +95,15 @@
     eventsList.innerHTML = '';
 
     if (eventsDTO.length === 0) {
-      eventsList.innerHTML = '<p class="no-events">No upcoming events found.</p>';
+      eventsList.innerHTML = `
+  <div class="animated-empty">
+    <div class="pulse-icon">
+      <i class="fas fa-calendar-check"></i>
+    </div>
+    <h3>All Caught Up!</h3>
+    <p>You have no upcoming events scheduled</p>
+  </div>
+`;
       return;
     }
 
@@ -103,9 +111,12 @@
       const eventElement = document.createElement('div');
       eventElement.classList.add('event-card');
       eventElement.innerHTML = `
-    <div class="event-card-body">
+    <div class="event-card-body ${event.eventstatus === 'Expired' ? 'expired-event' : event.eventstatus === 'Not Expired' ? 'active-event' : ''}">
         <div class="event-header">
             <h3>${event.title}</h3>
+            ${event.eventstatus ? `<span class="status-badge ${event.eventstatus === 'Expired' ? 'expired' : 'active'}">
+                ${event.eventstatus === 'Expired' ? 'Expired' : 'Active'}
+            </span>` : ''}
         </div>
         <div class="event-details">
             <p><i class="fas fa-calendar-day"></i> <strong>Date:</strong> ${event.date}</p>
@@ -119,17 +130,19 @@
                   <button class="delete-btn" data-id="${event.event_id}">
                       <i class="fas fa-trash-alt"></i> Delete
                   </button>
-                  <button class="invite-btn" data-id="${event.event_id}">
-                      <i class="fas fa-user-plus"></i> Invite
-                  </button>
-                  <button class="reminder-btn" data-id="${event.event_id}">
-                      <i class="fas fa-bell"></i> Reminder
-                  </button>
+                  ${event.eventstatus === 'Not Expired' ? `
+                    <button class="invite-btn" data-id="${event.event_id}">
+                        <i class="fas fa-user-plus"></i> Invite
+                    </button>
+                    <button class="reminder-btn" data-id="${event.event_id}">
+                        <i class="fas fa-bell"></i> Reminder
+                    </button>
+                  ` : ''}
               </div>
             ` : ''}
         </div>
     </div>
-    `;
+`;
       eventsList.appendChild(eventElement);
     });
     setupEditForms();
@@ -296,7 +309,6 @@
 
           if (!email) {
             alert('Please enter an email address');
-            return;
           }
 
             const response = await fetch(`http://localhost:8080/api/Add_Invitation/${eventId}`, {
@@ -315,8 +327,8 @@
                 eventModal.classList.remove('active');
                 eventForm.reset();
               }
-              else if (resultText === "THIS EMAIL IS NOT FOUND")
-                alert('This Email Is Not Found!');
+              else if (resultText === "THIS ACCOUNT IS NOT FOUND")
+                alert('This Account Is Not Found!');
             }
 
         }
@@ -368,7 +380,6 @@
 
           if (!date || !time) {
             alert('Please fill all fields');
-            return;
           }
 
           try {

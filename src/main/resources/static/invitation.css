@@ -298,3 +298,224 @@ body {
 .error-message {
     color: #dc3545;
 }
+
+/* Base Empty Invitations Style */
+.empty-invitations {
+    text-align: center;
+    padding: 40px 20px;
+    background: #f8f9fa;
+    border-radius: 16px;
+    margin: 20px 0;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+    border: 1px dashed rgba(0,0,0,0.08);
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Animation Containers */
+.animation-container {
+    position: relative;
+    width: 150px;
+    height: 100px;
+    margin: 0 auto 30px;
+}
+
+/* Sent Invitations Animation */
+.paper-plane {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 2rem;
+    color: #3498db;
+    animation: flyAcross 3s ease-in-out infinite;
+}
+
+.flight-path {
+    position: absolute;
+    bottom: 30%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(to right,
+    rgba(52, 152, 219, 0) 0%,
+    rgba(52, 152, 219, 0.3) 50%,
+    rgba(52, 152, 219, 0) 100%);
+}
+
+@keyframes flyAcross {
+    0% {
+        transform: translateX(0) translateY(-50%) rotate(0deg);
+        opacity: 0;
+    }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% {
+        transform: translateX(120px) translateY(-30%) rotate(20deg);
+        opacity: 0;
+    }
+}
+
+/* Received Invitations Animation */
+.envelope {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2.5rem;
+    color: #e74c3c;
+    animation: envelopeBounce 2s ease-in-out infinite;
+}
+
+.incoming-dots {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+}
+
+.incoming-dots .dot {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #95a5a6;
+    border-radius: 50%;
+    opacity: 0;
+}
+
+.incoming-dots .dot:nth-child(1) {
+    left: 10%;
+    animation: dotMove 3s linear infinite;
+}
+
+.incoming-dots .dot:nth-child(2) {
+    left: 35%;
+    animation: dotMove 3s linear infinite 0.5s;
+}
+
+.incoming-dots .dot:nth-child(3) {
+    left: 60%;
+    animation: dotMove 3s linear infinite 1s;
+}
+
+@keyframes envelopeBounce {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -55%) scale(1.05); }
+}
+
+@keyframes dotMove {
+    0% {
+        transform: translateY(0);
+        opacity: 0;
+    }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% {
+        transform: translateY(-40px);
+        opacity: 0;
+    }
+}
+
+/* Text Styles */
+.empty-invitations h3 {
+    color: #2c3e50;
+    margin: 0 0 10px;
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+.empty-invitations p {
+    color: #7f8c8d;
+    margin-bottom: 20px;
+    font-size: 1rem;
+}
+
+/* Action Button */
+.invite-action {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.invite-action:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.invite-action i {
+    font-size: 0.9rem;
+}
+
+/* Sub Message */
+.sub-message {
+    font-size: 0.85rem;
+    color: #95a5a6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.sub-message i {
+    color: #bdc3c7;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .empty-invitations {
+        background: #2c3e50;
+        border-color: rgba(255,255,255,0.1);
+    }
+
+    .empty-invitations h3 {
+        color: #ecf0f1;
+    }
+
+    .empty-invitations p, .sub-message {
+        color: #bdc3c7;
+    }
+
+    .flight-path {
+        background: linear-gradient(to right,
+        rgba(52, 152, 219, 0) 0%,
+        rgba(52, 152, 219, 0.2) 50%,
+        rgba(52, 152, 219, 0) 100%);
+    }
+
+    .incoming-dots .dot {
+        background: #7f8c8d;
+    }
+
+    .sub-message {
+        border-top: 1px solid rgba(255,255,255,0.1);
+    }
+}
+
+.invite-display {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 0.95rem;
+    background: #f0f0f0;
+    color: #666;
+    cursor: default;
+}
+
+.invite-display i {
+    font-size: 0.9rem;
+    color: #999;
+}

@@ -11,9 +11,12 @@ import java.util.List;
 public interface Event_Repo extends JpaRepository<Event, Integer> {
 
     @Query("SELECT new com.example.se2project.Entities.EventDTO(" +
-            "e.id, e.date, e.description, e.eventstatus.id, e.time, e.title) " +
+            "e.id, e.date, e.description, e.eventstatus, e.time, e.title) " +
             "FROM Event e WHERE e.user.id = :userId")
-    List<EventDTO> findEventByUserId(@Param("userId") Integer userId);
+    List<EventDTO> findEventsDtoByUserId(@Param("userId") Integer userId);
+
+    @Query("SELECT e FROM Event e WHERE e.user.id = :userId")
+    List<Event> findEventsByUserId(@Param("userId") Integer userId);
 
     Event findEventById(int id);
 }

@@ -31,20 +31,19 @@ public class Event {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "eventstatus_id")
-    private Eventstatus eventstatus;
+    @Column(name = "eventstatus", nullable = false, length = Integer.MAX_VALUE)
+    private String eventstatus;
 
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "event")
     private Set<Invitation> invitations = new LinkedHashSet<>();
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(name = "participation",
             joinColumns = @JoinColumn(name = "event_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> users = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "event")
     private Set<Reminder> reminders = new LinkedHashSet<>();
 
     public Integer getId() {
@@ -95,11 +94,11 @@ public class Event {
         this.user = user;
     }
 
-    public Eventstatus getEventstatus() {
+    public String getEventstatus() {
         return eventstatus;
     }
 
-    public void setEventstatus(Eventstatus eventstatus) {
+    public void setEventstatus(String eventstatus) {
         this.eventstatus = eventstatus;
     }
 

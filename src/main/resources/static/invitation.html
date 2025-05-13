@@ -66,7 +66,6 @@
 </main>
 
 <script>
-    // Function to fetch and display sent invitations
     async function loadSendedInvitations() {
         try {
             const response = await fetch("http://localhost:8080/api/Get_All_InvitationsSended", {
@@ -80,7 +79,21 @@
             const container = document.getElementById('sendedInvitations');
 
             if (invitationsSended.length === 0) {
-                container.innerHTML = '<p class="empty-message">No sent invitations</p>';
+                container.innerHTML = `
+    <div class="empty-invitations sent">
+      <div class="animation-container">
+        <div class="paper-plane">
+          <i class="fas fa-paper-plane"></i>
+        </div>
+        <div class="flight-path"></div>
+      </div>
+      <h3>No Sent Invitations</h3>
+      <p>You haven't sent any invitations yet</p>
+<div class="invite-display">
+  <i class="fas fa-plus"></i> Send Invitation
+</div>
+    </div>
+  `;
                 return;
             }
 
@@ -123,10 +136,28 @@
             const container = document.getElementById('receivedInvitations');
 
             if (invitationsReceived.length === 0) {
-                container.innerHTML = '<p class="empty-message">No received invitations</p>';
+                container.innerHTML = `
+    <div class="empty-invitations received">
+      <div class="animation-container">
+        <div class="envelope">
+          <i class="fas fa-envelope-open-text"></i>
+        </div>
+        <div class="incoming-dots">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+      </div>
+      <h3>No Received Invitations</h3>
+      <p>You don't have any pending invitations</p>
+      <div class="sub-message">
+        <i class="fas fa-info-circle"></i>
+        Invitations you receive will appear here
+      </div>
+    </div>
+  `;
                 return;
             }
-
             let html = '';
             invitationsReceived.forEach(invitation => {
                 html += `
@@ -141,7 +172,7 @@
             <i class="fas fa-check"></i> Accept
         </button>
         <button class="decline-btn" data-id="${invitation.invitationReceived_id}">
-            <i class="fas fa-times"></i> Decline
+            <i class="fas fa-times"></i> Reject
         </button>
     </div>
 </div>
@@ -186,6 +217,38 @@
             }
         }
     });
+
+
+
+    document.addEventListener('click', async function(event) {
+        if (event.target.closest('.decline-btn')) {
+            const button = event.target.closest('.decline-btn');
+            const invitationId = button.getAttribute('data-id');
+
+            try {
+                const response = await fetch(`http://localhost:8080/api/Decline_Invitation/${invitationId}`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+
+
+                if (response.ok) {
+                    const resultText = await response.text();
+                    if (resultText === "Rejected") {
+                        alert('Invitation Rejected Successfully!');
+                        loadReceivedInvitations();
+                    }
+                    else
+                        alert('Failed to Rejected invitation');
+                }
+            }
+            catch (error) {
+                console.error('Error Rejected invitation:', error);
+                alert('An error occurred');
+            }
+        }
+    });
+
 
 
 

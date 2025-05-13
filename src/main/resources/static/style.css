@@ -1,0 +1,428 @@
+:root {
+    --primary-color: #4285f4;
+    --secondary-color: #34a853;
+    --accent-color: #ea4335;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+    --gray-color: #6c757d;
+    --light-gray: #e9ecef;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--light-color);
+    color: var(--dark-color);
+    line-height: 1.6;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.user-controls button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.main-content {
+    display: flex;
+    flex: 1;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: white;
+    padding: 1rem;
+    border-right: 1px solid var(--light-gray);
+    display: flex;
+    flex-direction: column;
+}
+
+.view-options {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 2rem;
+}
+
+.view-options button {
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    border: none;
+    border-radius: 4px;
+    background-color: var(--light-gray);
+    color: var(--dark-color);
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    align-items: center;
+}
+
+.view-options button i {
+    margin-right: 0.5rem;
+}
+
+.view-options button.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.upcoming-events {
+    flex: 1;
+}
+
+.upcoming-events h3 {
+    margin-bottom: 1rem;
+    color: var(--gray-color);
+}
+
+.events-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.event-item {
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background-color: var(--light-gray);
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.event-item:hover {
+    background-color: #dee2e6;
+}
+
+.event-item h4 {
+    margin-bottom: 0.25rem;
+    color: var(--primary-color);
+}
+
+.event-time {
+    font-size: 0.8rem;
+    color: var(--gray-color);
+}
+
+.calendar-view {
+    flex: 1;
+    padding: 1rem;
+    background-color: white;
+}
+
+.day-view, .month-view, .list-view {
+    display: none;
+}
+
+.day-view.active, .month-view.active, .list-view.active {
+    display: block;
+}
+
+.date-header, .month-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.date-header button, .month-header button {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: var(--gray-color);
+}
+
+.date-header button:hover, .month-header button:hover {
+    color: var(--primary-color);
+}
+
+.time-slots {
+    border: 1px solid var(--light-gray);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.time-slot {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--light-gray);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.time-slot:last-child {
+    border-bottom: none;
+}
+
+.time-label {
+    font-weight: bold;
+    color: var(--gray-color);
+    width: 60px;
+}
+
+.time-events {
+    flex: 1;
+    margin-left: 1rem;
+}
+
+.calendar-event {
+    background-color: #e3f2fd;
+    padding: 0.5rem;
+    margin-bottom: 0.25rem;
+    border-radius: 4px;
+    border-left: 3px solid var(--primary-color);
+    cursor: pointer;
+}
+
+.calendar-event:hover {
+    background-color: #bbdefb;
+}
+
+.month-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+}
+
+.month-day-header {
+    text-align: center;
+    font-weight: bold;
+    padding: 0.5rem;
+    color: var(--gray-color);
+}
+
+.month-day {
+    border: 1px solid var(--light-gray);
+    min-height: 100px;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+.month-day:hover {
+    background-color: var(--light-gray);
+}
+
+.month-day.empty {
+    background-color: #f8f9fa;
+    cursor: default;
+}
+
+.month-day-number {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.month-day.today {
+    background-color: #e3f2fd;
+    border-color: var(--primary-color);
+}
+
+.month-day-events {
+    font-size: 0.8rem;
+}
+
+.month-day-event {
+    background-color: #e3f2fd;
+    padding: 0.1rem 0.25rem;
+    margin-bottom: 0.1rem;
+    border-radius: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* زر إضافة حدث جديد */
+.add-event-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.add-event-btn:hover {
+    background-color: #3367d6;
+    transform: scale(1.1);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--gray-color);
+}
+
+.close-btn:hover {
+    color: var(--dark-color);
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--light-gray);
+    border-radius: 4px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.form-actions button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#cancel-event {
+    background-color: var(--light-gray);
+    color: var(--dark-color);
+}
+
+#cancel-event:hover {
+    background-color: #dee2e6;
+}
+
+#save-event {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+#save-event:hover {
+    background-color: #3367d6;
+}
+
+.invitation-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.invitation-actions button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#accept-invitation {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+#accept-invitation:hover {
+    background-color: #2d9249;
+}
+
+#decline-invitation {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+#decline-invitation:hover {
+    background-color: #d33426;
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--light-gray);
+    }
+
+    .view-options {
+        flex-direction: row;
+        gap: 0.5rem;
+    }
+
+    .view-options button {
+        flex: 1;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .view-options button span {
+        display: none;
+    }
+}

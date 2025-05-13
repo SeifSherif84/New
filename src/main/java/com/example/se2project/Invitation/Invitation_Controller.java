@@ -1,6 +1,5 @@
 package com.example.se2project.Invitation;
 import com.example.se2project.Entities.*;
-import com.example.se2project.Entities.Event.*;
 import com.example.se2project.Event.Event_Repo;
 import com.example.se2project.User.User_Repo;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +13,10 @@ import java.util.Optional;
 public class Invitation_Controller {
 
     private final User_Repo user_repo ;
-    private final com.example.se2project.Event.Event_Repo event_Repo;
+    private final Event_Repo event_Repo;
     private final Invitation_Repo invitation_Repo;
 
-    public Invitation_Controller(User_Repo userRepo, com.example.se2project.Event.Event_Repo eventRepo, Invitation_Repo invitationRepo) {
+    public Invitation_Controller(User_Repo userRepo, Event_Repo eventRepo, Invitation_Repo invitationRepo) {
         user_repo = userRepo;
         event_Repo = eventRepo;
         invitation_Repo = invitationRepo;
@@ -25,6 +24,9 @@ public class Invitation_Controller {
 
     @PostMapping("/Add_Invitation/{eventid}")
     public ResponseEntity<String> Add_Invitation(@RequestBody EmailRequest emailRequest, @PathVariable Integer eventid, @CookieValue(value = "userId", required = false) String userId) {
+        if (emailRequest.getEmail() == null || emailRequest.getEmail().trim().isEmpty())
+            throw new IllegalArgumentException("Email is null or empty!");
+
         Invitation invitation = new Invitation();
         Optional<User> userLogged = user_repo.findById(Integer.parseInt(userId));
         invitation.setSender(userLogged.get());
@@ -39,7 +41,7 @@ public class Invitation_Controller {
             return ResponseEntity.ok("SUCCESS");
         }
         else {
-            return ResponseEntity.ok("THIS EMAIL IS NOT FOUND");
+            return ResponseEntity.ok("THIS ACCOUNT IS NOT FOUND");
         }
     }
 

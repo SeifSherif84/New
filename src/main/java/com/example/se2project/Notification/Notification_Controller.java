@@ -26,7 +26,7 @@ public class Notification_Controller {
 
     @GetMapping("/Get_All_Notification")
     public ResponseEntity<List<Notification>> Get_All_Notification(@CookieValue(value = "userId", required = false) String userId){
-        List<EventDTO> eventList = event_Repo.findEventByUserId(Integer.parseInt(userId));
+        List<EventDTO> eventList = event_Repo.findEventsDtoByUserId(Integer.parseInt(userId));
         List<EventDTO> reminderedEventsList = new ArrayList<>();
         eventList.forEach(event -> {
             if(reminder_Repo.existsByEventId(event.getEvent_id())){

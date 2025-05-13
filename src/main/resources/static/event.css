@@ -586,4 +586,143 @@
     cursor: pointer;
 }
 
+/* Status badges */
+.status-badge {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-left: 10px;
+    color: white;
+}
 
+.status-badge.active {
+    background-color: #28a745; /* Green for active/not expired */
+}
+
+.status-badge.expired {
+    background-color: #dc3545; /* Red for expired */
+}
+
+/* Optional: Add border or background for the whole card based on status */
+.event-card-body.active-event {
+    border-left: 4px solid #28a745;
+}
+
+.event-card-body.expired-event {
+    border-left: 4px solid #dc3545;
+}
+
+
+.event-card-body.active-event {
+    background-color: rgba(40, 167, 69, 0.05);
+}
+
+.event-card-body.expired-event {
+    background-color: rgba(220, 53, 69, 0.05);
+}
+
+/* Base Empty State Styles */
+.empty-state, .empty-illustration, .animated-empty {
+    text-align: center;
+    padding: 40px 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    margin: 20px 0;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+    border: 1px dashed rgba(0,0,0,0.1);
+}
+
+.empty-state h3, .empty-illustration h3, .animated-empty h3 {
+    color: #2c3e50;
+    margin: 15px 0 8px;
+    font-size: 1.3rem;
+}
+
+.empty-state p, .empty-illustration p, .animated-empty p {
+    color: #7f8c8d;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+/* Option 1 Specific Styles */
+.empty-icon {
+    font-size: 3.5rem;
+    color: #bdc3c7;
+    margin-bottom: 10px;
+}
+
+.empty-action {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.empty-action:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Option 2 Specific Styles */
+.empty-illustration svg {
+    color: #e0e0e0;
+    margin-bottom: 15px;
+}
+
+/* Option 3 Specific Styles */
+.pulse-icon {
+    font-size: 3rem;
+    color: #bdc3c7;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #f1f1f1;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.95); opacity: 0.8; }
+    50% { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+.suggestions {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+    font-size: 0.85rem;
+    color: #95a5a6;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .empty-state, .empty-illustration, .animated-empty {
+        background: #2c3e50;
+        border-color: rgba(255,255,255,0.1);
+    }
+
+    .empty-state h3, .empty-illustration h3, .animated-empty h3 {
+        color: #ecf0f1;
+    }
+
+    .empty-state p, .empty-illustration p, .animated-empty p {
+        color: #bdc3c7;
+    }
+
+    .empty-icon, .pulse-icon {
+        color: #34495e;
+    }
+
+    .suggestions {
+        border-top: 1px solid rgba(255,255,255,0.1);
+    }
+}
