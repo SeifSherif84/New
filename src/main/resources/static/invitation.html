@@ -1,85 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Calendar | Upcoming Events</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="invitation.css">
     <link rel="stylesheet" href="index.css">
 </head>
+
 <body>
-<!-- Mobile Menu Button -->
-<button class="mobile-menu-btn" id="menuToggle">
-    <i class="fas fa-bars"></i>
-</button>
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
 
-<!-- Sidebar Navigation -->
-<aside class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-        <img src="https://cdn-icons-png.flaticon.com/512/3652/3652191.png" alt="Smart Calendar Logo">
-        <h2>Smart Calendar</h2>
-    </div>
-
-    <ul class="nav-menu">
-        <li class="nav-item">
-            <a href="index.html" class="nav-link">
-                <i class="fas fa-calendar-alt"></i>
-                <span>Calendar</span>
-            </a>
-        </li>
-    </ul>
-</aside>
-
-<!-- Main Content -->
-<main class="main-content">
-    <header class="header">
-        <h1>Invitations</h1>
-        <div class="user-profile">
-            <img src="Photo/3d-rendering-avatar/9720009.jpg" alt="User Profile">
-            <div class="user-info">
-                <h4 id="usernameDisplay"></h4>
-            </div>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="https://cdn-icons-png.flaticon.com/512/3652/3652191.png" alt="Smart Calendar Logo">
+            <h2>Smart Calendar</h2>
         </div>
-    </header>
 
-    <div class="invitation-sections">
-        <!-- Invitation Sended Section -->
-        <section class="invitation-section">
-            <h2>Invitation Sended</h2>
-            <div id="sendedInvitations" class="invitations-list">
-                <!-- Invitations will be loaded here from API -->
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="index.html" class="nav-link">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Calendar</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="event.html" class="nav-link">
+                    <i class="fas fa-list-ul"></i>
+                    <span>Upcoming Events</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="invitation.html" class="nav-link active" id="invitation">
+                    <i class="fas fa-envelope"></i>
+                    <span>Invitation</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="notification.html" class="nav-link" id="notification">
+                    <i class="fas fa-bell"></i>
+                    <span>Notifications</span>
+                </a>
+            </li>
+            <div class="nav-menu">
+                <div class="nav-item">
+                    <a href="#" class="nav-link" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
             </div>
-        </section>
+        </ul>
+    </aside>
 
-        <!-- Invitation Received Section -->
-        <section class="invitation-section">
-            <h2>Invitation Received</h2>
-            <div id="receivedInvitations" class="invitations-list">
-
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="header">
+            <h1>Invitations</h1>
+            <div class="user-profile">
+                <img src="Photo/3d-rendering-avatar/9720009.jpg" alt="User Profile">
+                <div class="user-info">
+                    <h4 id="usernameDisplay"></h4>
+                </div>
             </div>
-        </section>
-    </div>
-</main>
+        </header>
 
-<script>
-    async function loadSendedInvitations() {
-        try {
-            const response = await fetch("http://localhost:8080/api/Get_All_InvitationsSended", {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include'
-            });
-            const invitationsSended = await response.json();
-            const container = document.getElementById('sendedInvitations');
+        <div class="invitation-sections">
+            <!-- Invitation Sended Section -->
+            <section class="invitation-section">
+                <h2>Invitation Sended</h2>
+                <div id="sendedInvitations" class="invitations-list">
+                    <!-- Invitations will be loaded here from API -->
+                </div>
+            </section>
 
-            if (invitationsSended.length === 0) {
-                container.innerHTML = `
+            <!-- Invitation Received Section -->
+            <section class="invitation-section">
+                <h2>Invitation Received</h2>
+                <div id="receivedInvitations" class="invitations-list">
+
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        async function loadSendedInvitations() {
+            try {
+                const response = await fetch("http://localhost:8081/api/Get_All_InvitationsSended", {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include'
+                });
+                const invitationsSended = await response.json();
+                const container = document.getElementById('sendedInvitations');
+
+                if (invitationsSended.length === 0) {
+                    container.innerHTML = `
     <div class="empty-invitations sent">
       <div class="animation-container">
         <div class="paper-plane">
@@ -94,12 +123,12 @@
 </div>
     </div>
   `;
-                return;
-            }
+                    return;
+                }
 
-            let html = '';
-            invitationsSended.forEach(invitation => {
-                html += `
+                let html = '';
+                invitationsSended.forEach(invitation => {
+                    html += `
     <div class="invitation-card">
         <h3>${invitation.receiver_name}</h3>
         <p><i class="fas fa-envelope"></i> ${invitation.receiver_email}</p>
@@ -111,32 +140,32 @@
     </div>
 `;
 
-            });
+                });
 
-            container.innerHTML = html;
-        } catch (error) {
-            console.error('Error loading invitations:', error);
-            document.getElementById('sendedInvitations').innerHTML =
-                '<p class="error-message">Failed to load invitations</p>';
+                container.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading invitations:', error);
+                document.getElementById('sendedInvitations').innerHTML =
+                    '<p class="error-message">Failed to load invitations</p>';
+            }
         }
-    }
 
 
 
-    async function loadReceivedInvitations() {
-        try {
-            const response = await fetch("http://localhost:8080/api/Get_All_InvitationsRecevied", {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include'
-            });
-            const invitationsReceived = await response.json();
-            const container = document.getElementById('receivedInvitations');
+        async function loadReceivedInvitations() {
+            try {
+                const response = await fetch("http://localhost:8081/api/Get_All_InvitationsRecevied", {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include'
+                });
+                const invitationsReceived = await response.json();
+                const container = document.getElementById('receivedInvitations');
 
-            if (invitationsReceived.length === 0) {
-                container.innerHTML = `
+                if (invitationsReceived.length === 0) {
+                    container.innerHTML = `
     <div class="empty-invitations received">
       <div class="animation-container">
         <div class="envelope">
@@ -156,11 +185,11 @@
       </div>
     </div>
   `;
-                return;
-            }
-            let html = '';
-            invitationsReceived.forEach(invitation => {
-                html += `
+                    return;
+                }
+                let html = '';
+                invitationsReceived.forEach(invitation => {
+                    html += `
 <div class="invitation-card received">
     <h3>${invitation.sender_name}</h3>
     <p><i class="fas fa-envelope"></i> ${invitation.sender_email}</p>
@@ -177,110 +206,111 @@
     </div>
 </div>
 `;
-            });
-
-            container.innerHTML = html;
-        } catch (error) {
-            console.error('Error loading invitations:', error);
-            document.getElementById('receivedInvitations').innerHTML =
-                '<p class="error-message">Failed to load invitations</p>';
-        }
-    }
-
-
-
-    document.addEventListener('click', async function(event) {
-        if (event.target.closest('.accept-btn')) {
-            const button = event.target.closest('.accept-btn');
-            const invitationId = button.getAttribute('data-id');
-
-            try {
-                const response = await fetch(`http://localhost:8080/api/Accept_Invitation/${invitationId}`, {
-                    method: 'POST',
-                    credentials: 'include'
                 });
 
+                container.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading invitations:', error);
+                document.getElementById('receivedInvitations').innerHTML =
+                    '<p class="error-message">Failed to load invitations</p>';
+            }
+        }
 
-                if (response.ok) {
-                    const resultText = await response.text();
-                    if (resultText === "Accepted") {
-                        alert('Invitation Accepted Successfully!');
-                        loadReceivedInvitations();
+
+
+        document.addEventListener('click', async function (event) {
+            if (event.target.closest('.accept-btn')) {
+                const button = event.target.closest('.accept-btn');
+                const invitationId = button.getAttribute('data-id');
+
+                try {
+                    const response = await fetch(`http://localhost:8081/api/Accept_Invitation/${invitationId}`, {
+                        method: 'POST',
+                        credentials: 'include'
+                    });
+
+
+                    if (response.ok) {
+                        const resultText = await response.text();
+                        if (resultText === "Accepted") {
+                            alert('Invitation Accepted Successfully!');
+                            loadReceivedInvitations();
+                        }
+                        else
+                            alert('Failed to accept invitation');
                     }
-                    else
-                        alert('Failed to accept invitation');
+                }
+                catch (error) {
+                    console.error('Error accepting invitation:', error);
+                    alert('An error occurred');
                 }
             }
-            catch (error) {
-                console.error('Error accepting invitation:', error);
-                alert('An error occurred');
-            }
-        }
-    });
+        });
 
 
 
-    document.addEventListener('click', async function(event) {
-        if (event.target.closest('.decline-btn')) {
-            const button = event.target.closest('.decline-btn');
-            const invitationId = button.getAttribute('data-id');
+        document.addEventListener('click', async function (event) {
+            if (event.target.closest('.decline-btn')) {
+                const button = event.target.closest('.decline-btn');
+                const invitationId = button.getAttribute('data-id');
 
-            try {
-                const response = await fetch(`http://localhost:8080/api/Decline_Invitation/${invitationId}`, {
-                    method: 'POST',
-                    credentials: 'include'
-                });
+                try {
+                    const response = await fetch(`http://localhost:8081/api/Decline_Invitation/${invitationId}`, {
+                        method: 'POST',
+                        credentials: 'include'
+                    });
 
 
-                if (response.ok) {
-                    const resultText = await response.text();
-                    if (resultText === "Rejected") {
-                        alert('Invitation Rejected Successfully!');
-                        loadReceivedInvitations();
+                    if (response.ok) {
+                        const resultText = await response.text();
+                        if (resultText === "Rejected") {
+                            alert('Invitation Rejected Successfully!');
+                            loadReceivedInvitations();
+                        }
+                        else
+                            alert('Failed to Rejected invitation');
                     }
-                    else
-                        alert('Failed to Rejected invitation');
+                }
+                catch (error) {
+                    console.error('Error Rejected invitation:', error);
+                    alert('An error occurred');
                 }
             }
-            catch (error) {
-                console.error('Error Rejected invitation:', error);
-                alert('An error occurred');
+        });
+
+
+
+
+        function getStatusIcon(status) {
+            switch (status) {
+                case 'pending': return 'fas fa-clock';
+                case 'accepted': return 'fas fa-check-circle';
+                case 'rejected': return 'fas fa-times-circle';
+                default: return 'fas fa-question-circle';
             }
         }
-    });
 
-
-
-
-    function getStatusIcon(status) {
-        switch(status) {
-            case 'pending': return 'fas fa-clock';
-            case 'accepted': return 'fas fa-check-circle';
-            case 'rejected': return 'fas fa-times-circle';
-            default: return 'fas fa-question-circle';
+        function formatStatus(status) {
+            switch (status) {
+                case 'pending': return 'Pending';
+                case 'accepted': return 'Accepted';
+                case 'rejected': return 'Rejected';
+                default: return status;
+            }
         }
-    }
+        document.addEventListener('DOMContentLoaded', function () {
+            const username = getCookie('userName');
+            document.getElementById('usernameDisplay').textContent = username;
+            loadSendedInvitations();
+            loadReceivedInvitations();
+        });
 
-    function formatStatus(status) {
-        switch(status) {
-            case 'pending': return 'Pending';
-            case 'accepted': return 'Accepted';
-            case 'rejected': return 'Rejected';
-            default: return status;
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
         }
-    }
-    document.addEventListener('DOMContentLoaded', function() {
-        const username = getCookie('userName');
-        document.getElementById('usernameDisplay').textContent = username;
-        loadSendedInvitations();
-        loadReceivedInvitations();
-    });
-
-    function getCookie(name) {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-    }
-</script>
+    </script>
 </body>
+
 </html>

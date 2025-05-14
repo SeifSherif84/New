@@ -8,4 +8,9 @@ public class Home_Controller {
     public String hello() {
         return "welcome.html";
     }
+    
+    @GetMapping("/calendar")
+    public String calendar() {
+        return "calendar.html";
+    }
 }

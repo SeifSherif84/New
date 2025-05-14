@@ -13,7 +13,7 @@ import java.util.NoSuchElementException;
 @Component
 public class Exception_Aspect {
 
-    private final String LOG_FILE = "C:/logs/execution_log.txt";
+    private final String LOG_FILE = "D:/wageh/Logs/logs.txt";
 
     @Around("execution(* com.example.se2project..*(..))")
     public Object handleExceptions(ProceedingJoinPoint joinPoint) throws Throwable {

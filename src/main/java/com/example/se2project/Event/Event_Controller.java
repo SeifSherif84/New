@@ -180,5 +180,64 @@ public class Event_Controller {
         }
     }
 
+    @GetMapping("/calendar/events")
+    public ResponseEntity<List<EventDTO>> getCalendarEvents(
+            @RequestParam(required = false) String viewType,
+            @RequestParam(required = false) String date,
+            @RequestParam(required = false) String month,
+            @RequestParam(required = false) String year,
+            @CookieValue(value = "userId", required = false) String userId) {
+        
+        Update_EventStatus(userId);
+        
+        // Get all events created by the user
+        List<EventDTO> eventsCreated = event_Repo.findEventsDtoByUserId(Integer.parseInt(userId));
+        for (EventDTO e : eventsCreated) {
+            e.setEventSource("Created");
+        }
+
+        // Get all events the user is participating in
+        List<Participation> participations = paricipation_Repo.findParticipationsByUserId(Integer.parseInt(userId));
+        List<EventDTO> eventsParticipated = new ArrayList<>();
+        for (Participation participation : participations) {
+            Event event = event_Repo.findEventById(participation.getEvent().getId());
+            boolean alreadyAdded = eventsCreated.stream().anyMatch(e -> e.getEvent_id() == event.getId());
+            if (alreadyAdded) continue;
+
+            EventDTO eventDTO = new EventDTO(
+                    event.getId(),
+                    event.getDate(),
+                    event.getDescription(),
+                    event.getEventstatus(),
+                    event.getTime(),
+                    event.getTitle()
+            );
+            eventDTO.setEventSource("Participated");
+            eventsParticipated.add(eventDTO);
+        }
+
+        // Combine all events
+        List<EventDTO> allEvents = new ArrayList<>();
+        allEvents.addAll(eventsCreated);
+        allEvents.addAll(eventsParticipated);
+        
+        // Filter based on view type if specified
+        if (viewType != null && date != null) {
+            if (viewType.equals("day")) {
+                LocalDate requestedDate = LocalDate.parse(date);
+                allEvents = allEvents.stream()
+                    .filter(e -> e.getDate().equals(requestedDate))
+                    .toList();
+            } else if (viewType.equals("month") && month != null && year != null) {
+                int monthVal = Integer.parseInt(month);
+                int yearVal = Integer.parseInt(year);
+                allEvents = allEvents.stream()
+                    .filter(e -> e.getDate().getMonthValue() == monthVal && e.getDate().getYear() == yearVal)
+                    .toList();
+            }
+        }
+        
+        return ResponseEntity.ok(allEvents);
+    }
 
 }

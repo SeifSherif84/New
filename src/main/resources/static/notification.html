@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,68 +12,95 @@
   <link rel="stylesheet" href="notification.css">
   <link rel="stylesheet" href="index.css">
 </head>
+
 <body>
-<!-- Mobile Menu Button -->
-<button class="mobile-menu-btn" id="menuToggle">
-  <i class="fas fa-bars"></i>
-</button>
+  <!-- Mobile Menu Button -->
+  <button class="mobile-menu-btn" id="menuToggle">
+    <i class="fas fa-bars"></i>
+  </button>
 
-<!-- Sidebar Navigation -->
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-header">
-    <img src="https://cdn-icons-png.flaticon.com/512/3652/3652191.png" alt="Smart Calendar Logo">
-    <h2>Smart Calendar</h2>
-  </div>
-
-  <ul class="nav-menu">
-    <li class="nav-item">
-      <a href="index.html" class="nav-link">
-        <i class="fas fa-calendar-alt"></i>
-        <span>Calendar</span>
-      </a>
-    </li>
-  </ul>
-</aside>
-
-<!-- Main Content -->
-<main class="main-content">
-  <header class="header">
-    <h1>Notification</h1>
-    <div class="user-profile">
-      <img src="Photo/3d-rendering-avatar/9720009.jpg" alt="User Profile">
-      <div class="user-info">
-        <h4 id="usernameDisplay"></h4>
-      </div>
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <img src="https://cdn-icons-png.flaticon.com/512/3652/3652191.png" alt="Smart Calendar Logo">
+      <h2>Smart Calendar</h2>
     </div>
-  </header>
 
-  <div class="notification-container" id="notificationsContainer">
-    <!-- سيتم ملء الإشعارات هنا عبر JavaScript -->
-  </div>
-</main>
+    <ul class="nav-menu">
+      <li class="nav-item">
+        <a href="index.html" class="nav-link">
+          <i class="fas fa-calendar-alt"></i>
+          <span>Calendar</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="event.html" class="nav-link">
+          <i class="fas fa-list-ul"></i>
+          <span>Upcoming Events</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="invitation.html" class="nav-link" id="invitation">
+          <i class="fas fa-envelope"></i>
+          <span>Invitation</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="notification.html" class="nav-link active" id="notification">
+          <i class="fas fa-bell"></i>
+          <span>Notifications</span>
+        </a>
+      </li>
+      <div class="nav-menu">
+        <div class="nav-item">
+          <a href="#" class="nav-link" id="logoutBtn">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </a>
+        </div>
+      </div>
+    </ul>
+  </aside>
 
-<script>
-  // Function to fetch and display notifications
-  async function loadNotifications() {
-    try {
-      const response = await fetch("http://localhost:8080/api/Get_All_Notification", {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include'
-      });
+  <!-- Main Content -->
+  <main class="main-content">
+    <header class="header">
+      <h1>Notification</h1>
+      <div class="user-profile">
+        <img src="Photo/3d-rendering-avatar/9720009.jpg" alt="User Profile">
+        <div class="user-info">
+          <h4 id="usernameDisplay"></h4>
+        </div>
+      </div>
+    </header>
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch notifications');
-      }
+    <div class="notification-container" id="notificationsContainer">
+      <!-- سيتم ملء الإشعارات هنا عبر JavaScript -->
+    </div>
+  </main>
 
-      const notifications = await response.json();
-      const container = document.getElementById('notificationsContainer');
+  <script>
+    // Function to fetch and display notifications
+    async function loadNotifications() {
+      try {
+        const response = await fetch("http://localhost:8081/api/Get_All_Notification", {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include'
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch notifications');
+        }
+
+        const notifications = await response.json();
+        const container = document.getElementById('notificationsContainer');
 
 
-      if (notifications.length === 0) {
-        container.innerHTML = `
+        if (notifications.length === 0) {
+          container.innerHTML = `
     <div class="empty-notifications">
       <div class="bell-animation">
         <i class="fas fa-bell-slash"></i>
@@ -90,17 +118,17 @@
       </div>
     </div>
   `;
-        return;
-      }
+          return;
+        }
 
-      let html = '';
-      notifications.forEach(notification => {
-        // تنسيق التاريخ والوقت بشكل أفضل
-        const date = new Date(notification.event_Date);
-        const formattedDate = date.toLocaleDateString();
-        const formattedTime = notification.event_Time || '';
+        let html = '';
+        notifications.forEach(notification => {
+          // تنسيق التاريخ والوقت بشكل أفضل
+          const date = new Date(notification.event_Date);
+          const formattedDate = date.toLocaleDateString();
+          const formattedTime = notification.event_Time || '';
 
-        html += `
+          html += `
   <div class="notification-card">
     <h3>${notification.event_title}</h3>
     <p><i class="fas fa-calendar-day"></i> ${formattedDate}</p>
@@ -109,35 +137,36 @@
     <p class="warning-icon"><i class="fas fa-exclamation-triangle"></i> Important warning!</p>
   </div>
 `;
-      });
+        });
 
-      container.innerHTML = html;
-    } catch (error) {
-      console.error('Error loading notifications:', error);
-      document.getElementById('notificationsContainer').innerHTML =
-              '<p class="error-message">Failed to load notifications. Please try again later.</p>';
+        container.innerHTML = html;
+      } catch (error) {
+        console.error('Error loading notifications:', error);
+        document.getElementById('notificationsContainer').innerHTML =
+          '<p class="error-message">Failed to load notifications. Please try again later.</p>';
+      }
     }
-  }
 
-  document.addEventListener('DOMContentLoaded', function() {
-    const username = getCookie('userName');
-    document.getElementById('usernameDisplay').textContent = username;
-    loadNotifications();
-  });
+    document.addEventListener('DOMContentLoaded', function () {
+      const username = getCookie('userName');
+      document.getElementById('usernameDisplay').textContent = username;
+      loadNotifications();
+    });
 
-  function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-  }
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    }
 
-</script>
+  </script>
 
 
-<!-- قبل </body> مباشرة -->
-<audio id="notificationSound" preload="auto">
-  <source src="audio/mixkit-trombone-disappoint-744.wav" type="audio/mpeg">
-</audio>
+  <!-- قبل </body> مباشرة -->
+  <audio id="notificationSound" preload="auto">
+    <source src="audio/mixkit-trombone-disappoint-744.wav" type="audio/mpeg">
+  </audio>
 
 </body>
+
 </html>

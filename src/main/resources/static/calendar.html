@@ -1,71 +1,636 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Calendar</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Calendar specific styles */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 20px;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .calendar-view {
+            flex: 1;
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .view-options {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .view-options button {
+            padding: 8px 12px;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .view-options button.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .day-view,
+        .month-view,
+        .list-view {
+            display: none;
+        }
+
+        .day-view.active,
+        .month-view.active,
+        .list-view.active {
+            display: block;
+        }
+
+        .date-header,
+        .month-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .time-slots {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .time-slot {
+            display: flex;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .time-label {
+            width: 80px;
+            font-weight: bold;
+        }
+
+        .time-events {
+            flex: 1;
+        }
+
+        .calendar-event {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 8px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .calendar-event.empty {
+            background-color: #f5f5f5;
+            border-left: none;
+            color: #999;
+            font-style: italic;
+        }
+
+        .month-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .month-day-header {
+            text-align: center;
+            font-weight: bold;
+            padding: 10px 0;
+            background-color: #f0f0f0;
+        }
+
+        .month-day {
+            min-height: 100px;
+            border: 1px solid #ddd;
+            padding: 5px;
+            position: relative;
+        }
+
+        .month-day.empty {
+            background-color: #f9f9f9;
+        }
+
+        .month-day.today {
+            background-color: #fff8e1;
+        }
+
+        .month-day-number {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .month-day-event {
+            font-size: 0.8em;
+            background-color: #e3f2fd;
+            border-left: 3px solid #2196f3;
+            padding: 3px 5px;
+            margin-bottom: 3px;
+            border-radius: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
+        }
+
+        .events-list {
+            margin-top: 10px;
+        }
+
+        .event-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+
+        .event-item h4 {
+            margin: 0 0 5px 0;
+        }
+
+        .event-time {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .upcoming-events h3 {
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
+
 <body>
-<div class="container">
-    <header>
-        <h1>Smart Calendar</h1>
-        <div class="user-controls">
-            <button id="user-btn"><i class="fas fa-user"></i></button>
-        </div>
-    </header>
-
-    <div class="main-content">
-        <div class="sidebar">
-            <div class="view-options">
-                <button id="day-view" class="active"><i class="fas fa-calendar-day"></i> Day</button>
-                <button id="month-view"><i class="fas fa-calendar-alt"></i> Month</button>
-                <button id="list-view"><i class="fas fa-list"></i> List</button>
+    <div class="container">
+        <header>
+            <h1>Smart Calendar</h1>
+            <div class="user-controls">
+                <button id="user-btn"><i class="fas fa-user"></i></button>
             </div>
+        </header>
 
-            <div class="upcoming-events">
-                <h3>Upcoming Events</h3>
-                <div class="events-list" id="upcoming-events-list">
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="view-options">
+                    <button id="day-view-btn" class="active"><i class="fas fa-calendar-day"></i> Day</button>
+                    <button id="month-view-btn"><i class="fas fa-calendar-alt"></i> Month</button>
+                    <button id="list-view-btn"><i class="fas fa-list"></i> List</button>
                 </div>
-            </div>
-        </div>
 
-        <div class="calendar-view">
-            <!-- Day View -->
-            <div class="day-view active" id="day-view-container">
-                <div class="date-header">
-                    <button id="prev-day"><i class="fas fa-chevron-left"></i></button>
-                    <h2 id="current-date">Monday, January 1, 2023</h2>
-                    <button id="next-day"><i class="fas fa-chevron-right"></i></button>
-                </div>
-                <div class="time-slots" id="day-time-slots">
-                    <!-- Time slots will be populated here -->
+                <div class="upcoming-events">
+                    <h3>Upcoming Events</h3>
+                    <div class="events-list" id="upcoming-events-list">
+                        <!-- Upcoming events will be populated here -->
+                    </div>
                 </div>
             </div>
 
-            <!-- Month View -->
-            <div class="month-view" id="month-view-container">
-                <div class="month-header">
-                    <button id="prev-month"><i class="fas fa-chevron-left"></i></button>
-                    <h2 id="current-month">January 2023</h2>
-                    <button id="next-month"><i class="fas fa-chevron-right"></i></button>
+            <div class="calendar-view">
+                <!-- Day View -->
+                <div class="day-view active" id="day-view-container">
+                    <div class="date-header">
+                        <button id="prev-day"><i class="fas fa-chevron-left"></i></button>
+                        <h2 id="current-date">Monday, January 1, 2023</h2>
+                        <button id="next-day"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div class="time-slots" id="day-time-slots">
+                        <!-- Time slots will be populated here -->
+                    </div>
                 </div>
-                <div class="month-grid" id="month-grid">
-                    <!-- Month grid will be populated here -->
-                </div>
-            </div>
 
-            <!-- List View -->
-            <div class="list-view" id="list-view-container">
-                <h2>All Events</h2>
-                <div class="events-list" id="all-events-list">
-                    <!-- All events will be populated here -->
+                <!-- Month View -->
+                <div class="month-view" id="month-view-container">
+                    <div class="month-header">
+                        <button id="prev-month"><i class="fas fa-chevron-left"></i></button>
+                        <h2 id="current-month">January 2023</h2>
+                        <button id="next-month"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div class="month-grid" id="month-grid">
+                        <!-- Month grid will be populated here -->
+                    </div>
+                </div>
+
+                <!-- List View -->
+                <div class="list-view" id="list-view-container">
+                    <h2>All Events</h2>
+                    <div class="events-list" id="all-events-list">
+                        <!-- All events will be populated here -->
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<script src="script.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // DOM Elements
+            const dayViewBtn = document.getElementById('day-view-btn');
+            const monthViewBtn = document.getElementById('month-view-btn');
+            const listViewBtn = document.getElementById('list-view-btn');
+
+            const dayViewContainer = document.getElementById('day-view-container');
+            const monthViewContainer = document.getElementById('month-view-container');
+            const listViewContainer = document.getElementById('list-view-container');
+
+            const currentDateEl = document.getElementById('current-date');
+            const currentMonthEl = document.getElementById('current-month');
+
+            const prevDayBtn = document.getElementById('prev-day');
+            const nextDayBtn = document.getElementById('next-day');
+            const prevMonthBtn = document.getElementById('prev-month');
+            const nextMonthBtn = document.getElementById('next-month');
+
+            const dayTimeSlots = document.getElementById('day-time-slots');
+            const monthGrid = document.getElementById('month-grid');
+            const allEventsList = document.getElementById('all-events-list');
+            const upcomingEventsList = document.getElementById('upcoming-events-list');
+
+            // State
+            let currentView = 'day';
+            let currentDate = new Date();
+            let currentMonth = currentDate.getMonth();
+            let currentYear = currentDate.getFullYear();
+            let events = [];
+
+            // Fetch events from the server
+            async function fetchEvents(viewType, params = {}) {
+                let url = '/api/calendar/events?viewType=' + viewType;
+
+                if (viewType === 'day') {
+                    const formattedDate = formatDate(params.date || currentDate);
+                    url += '&date=' + formattedDate;
+                } else if (viewType === 'month') {
+                    url += '&month=' + (params.month || currentMonth + 1);
+                    url += '&year=' + (params.year || currentYear);
+                }
+
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch events');
+                    }
+                    const data = await response.json();
+                    return data;
+                } catch (error) {
+                    console.error('Error fetching events:', error);
+                    return [];
+                }
+            }
+
+            // Helper Functions
+            function formatDate(date) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
+            function formatTime(time) {
+                return time;
+            }
+
+            function getDayName(date) {
+                return date.toLocaleDateString('en-US', { weekday: 'long' });
+            }
+
+            function getMonthName(month) {
+                const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                return months[month];
+            }
+
+            function isToday(date) {
+                const today = new Date();
+                return date.getDate() === today.getDate() &&
+                    date.getMonth() === today.getMonth() &&
+                    date.getFullYear() === today.getFullYear();
+            }
+
+            // View rendering functions
+            async function renderDayView() {
+                const dayName = getDayName(currentDate);
+                const formattedDate = currentDate.toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                currentDateEl.textContent = formattedDate;
+
+                // Fetch events for this day
+                events = await fetchEvents('day', { date: currentDate });
+
+                // Clear previous time slots
+                dayTimeSlots.innerHTML = '';
+
+                // Create time slots for the day (8am to 8pm)
+                for (let hour = 8; hour <= 20; hour++) {
+                    const timeSlot = document.createElement('div');
+                    timeSlot.className = 'time-slot';
+
+                    const timeLabel = document.createElement('div');
+                    timeLabel.className = 'time-label';
+                    timeLabel.textContent = hour > 12 ? `${hour - 12} PM` : `${hour} AM`;
+
+                    const timeEvents = document.createElement('div');
+                    timeEvents.className = 'time-events';
+
+                    // Find events for this hour
+                    const hourEvents = events.filter(event => {
+                        const eventTime = event.time.toString();
+                        const eventHour = parseInt(eventTime.split(':')[0]);
+                        return eventHour === hour;
+                    });
+
+                    // Add events to the time slot
+                    hourEvents.forEach(event => {
+                        const eventEl = document.createElement('div');
+                        eventEl.className = 'calendar-event';
+                        eventEl.innerHTML = `
+                    <strong>${event.title}</strong>
+                    <div>${event.time} - ${event.description}</div>
+                `;
+                        timeEvents.appendChild(eventEl);
+                    });
+
+                    // Add empty state if no events
+                    if (hourEvents.length === 0) {
+                        const emptyEvent = document.createElement('div');
+                        emptyEvent.className = 'calendar-event empty';
+                        emptyEvent.textContent = 'No events';
+                        timeEvents.appendChild(emptyEvent);
+                    }
+
+                    timeSlot.appendChild(timeLabel);
+                    timeSlot.appendChild(timeEvents);
+                    dayTimeSlots.appendChild(timeSlot);
+                }
+
+                // Also update upcoming events
+                renderUpcomingEvents();
+            }
+
+            async function renderMonthView() {
+                currentMonthEl.textContent = `${getMonthName(currentMonth)} ${currentYear}`;
+
+                // Fetch events for this month
+                events = await fetchEvents('month', { month: currentMonth + 1, year: currentYear });
+
+                // Clear previous month grid
+                monthGrid.innerHTML = '';
+
+                // Add day headers
+                const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                days.forEach(day => {
+                    const dayHeader = document.createElement('div');
+                    dayHeader.className = 'month-day-header';
+                    dayHeader.textContent = day;
+                    monthGrid.appendChild(dayHeader);
+                });
+
+                // Get first day of month and how many days in month
+                const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+                const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+                // Add empty slots for days before the first day of the month
+                for (let i = 0; i < firstDay; i++) {
+                    const emptyDay = document.createElement('div');
+                    emptyDay.className = 'month-day empty';
+                    monthGrid.appendChild(emptyDay);
+                }
+
+                // Add days of the month
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dayEl = document.createElement('div');
+                    dayEl.className = 'month-day';
+
+                    const date = new Date(currentYear, currentMonth, day);
+                    if (isToday(date)) {
+                        dayEl.classList.add('today');
+                    }
+
+                    const dayNumber = document.createElement('div');
+                    dayNumber.className = 'month-day-number';
+                    dayNumber.textContent = day;
+                    dayEl.appendChild(dayNumber);
+
+                    const dayEvents = document.createElement('div');
+                    dayEvents.className = 'month-day-events';
+
+                    // Find events for this day
+                    const formattedDate = formatDate(date);
+                    const dayEventsData = events.filter(event => {
+                        const eventDate = new Date(event.date);
+                        return eventDate.getDate() === day;
+                    });
+
+                    // Add events to the day (limit to 3 for display)
+                    dayEventsData.slice(0, 3).forEach(event => {
+                        const eventEl = document.createElement('div');
+                        eventEl.className = 'month-day-event';
+                        eventEl.textContent = `${event.time} ${event.title}`;
+                        dayEvents.appendChild(eventEl);
+                    });
+
+                    // Add more indicator if there are more events
+                    if (dayEventsData.length > 3) {
+                        const moreEl = document.createElement('div');
+                        moreEl.className = 'month-day-event';
+                        moreEl.textContent = `+${dayEventsData.length - 3} more`;
+                        dayEvents.appendChild(moreEl);
+                    }
+
+                    dayEl.appendChild(dayEvents);
+                    dayEl.addEventListener('click', () => {
+                        currentDate = date;
+                        switchToView('day');
+                    });
+
+                    monthGrid.appendChild(dayEl);
+                }
+
+                // Also update upcoming events
+                renderUpcomingEvents();
+            }
+
+            async function renderListView() {
+                // Fetch all events
+                events = await fetchEvents('all');
+
+                // Clear previous list
+                allEventsList.innerHTML = '';
+
+                // Group events by date
+                const eventsByDate = {};
+                events.forEach(event => {
+                    const eventDate = event.date;
+                    if (!eventsByDate[eventDate]) {
+                        eventsByDate[eventDate] = [];
+                    }
+                    eventsByDate[eventDate].push(event);
+                });
+
+                // Add events to the list
+                for (const date in eventsByDate) {
+                    const dateHeader = document.createElement('h3');
+                    const dateObj = new Date(date);
+                    dateHeader.textContent = dateObj.toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                    allEventsList.appendChild(dateHeader);
+
+                    eventsByDate[date].forEach(event => {
+                        const eventEl = document.createElement('div');
+                        eventEl.className = 'event-item';
+                        eventEl.innerHTML = `
+                    <h4>${event.title}</h4>
+                    <div class="event-time">${event.time}</div>
+                    <div>${event.description}</div>
+                `;
+                        allEventsList.appendChild(eventEl);
+                    });
+                }
+
+                // Add empty state if no events
+                if (events.length === 0) {
+                    const emptyEl = document.createElement('div');
+                    emptyEl.className = 'empty-state';
+                    emptyEl.textContent = 'No events found';
+                    allEventsList.appendChild(emptyEl);
+                }
+            }
+
+            async function renderUpcomingEvents() {
+                // Clear previous list
+                upcomingEventsList.innerHTML = '';
+
+                // Get today's date
+                const today = new Date();
+
+                // Filter upcoming events (today and future)
+                const upcomingEvents = events.filter(event => {
+                    const eventDate = new Date(event.date);
+                    return eventDate >= today;
+                }).sort((a, b) => {
+                    const dateA = new Date(a.date);
+                    const dateB = new Date(b.date);
+                    return dateA - dateB;
+                }).slice(0, 5); // Limit to 5 events
+
+                // Add events to the list
+                upcomingEvents.forEach(event => {
+                    const eventEl = document.createElement('div');
+                    eventEl.className = 'event-item';
+                    const eventDate = new Date(event.date);
+                    eventEl.innerHTML = `
+                <h4>${event.title}</h4>
+                <div class="event-time">${eventDate.toLocaleDateString()} ${event.time}</div>
+            `;
+                    upcomingEventsList.appendChild(eventEl);
+                });
+
+                // Add empty state if no events
+                if (upcomingEvents.length === 0) {
+                    const emptyEl = document.createElement('div');
+                    emptyEl.className = 'empty-state';
+                    emptyEl.textContent = 'No upcoming events';
+                    upcomingEventsList.appendChild(emptyEl);
+                }
+            }
+
+            // View switching
+            function switchToView(view) {
+                currentView = view;
+
+                // Update active button
+                dayViewBtn.classList.remove('active');
+                monthViewBtn.classList.remove('active');
+                listViewBtn.classList.remove('active');
+
+                // Hide all views
+                dayViewContainer.classList.remove('active');
+                monthViewContainer.classList.remove('active');
+                listViewContainer.classList.remove('active');
+
+                // Show selected view
+                if (view === 'day') {
+                    dayViewBtn.classList.add('active');
+                    dayViewContainer.classList.add('active');
+                    renderDayView();
+                } else if (view === 'month') {
+                    monthViewBtn.classList.add('active');
+                    monthViewContainer.classList.add('active');
+                    renderMonthView();
+                } else if (view === 'list') {
+                    listViewBtn.classList.add('active');
+                    listViewContainer.classList.add('active');
+                    renderListView();
+                }
+            }
+
+            // Event handlers
+            dayViewBtn.addEventListener('click', () => switchToView('day'));
+            monthViewBtn.addEventListener('click', () => switchToView('month'));
+            listViewBtn.addEventListener('click', () => switchToView('list'));
+
+            prevDayBtn.addEventListener('click', () => {
+                currentDate.setDate(currentDate.getDate() - 1);
+                renderDayView();
+            });
+
+            nextDayBtn.addEventListener('click', () => {
+                currentDate.setDate(currentDate.getDate() + 1);
+                renderDayView();
+            });
+
+            prevMonthBtn.addEventListener('click', () => {
+                currentMonth--;
+                if (currentMonth < 0) {
+                    currentMonth = 11;
+                    currentYear--;
+                }
+                renderMonthView();
+            });
+
+            nextMonthBtn.addEventListener('click', () => {
+                currentMonth++;
+                if (currentMonth > 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                }
+                renderMonthView();
+            });
+
+            // Initialize the app
+            switchToView('day');
+        });
+    </script>
 </body>
+
 </html>
