@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @Component
 public class Logging_Aspect {
 
-
     private final String LOG_FILE = "C:/logs/execution_log.txt";
 
     @Around("execution(* com.example.se2project.Event.Event_Controller.Add_Event(..)) || " +
